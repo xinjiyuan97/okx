@@ -51,12 +51,14 @@ def request_retry_wrapper(retry_num=50,retry_delay=0.1):
 
 class Client(object):
     API_URL = 'https://www.okex.com'
+    session: requests.Session 
 
     def __init__(self, key='', secret='', passphrase='', flag='0'):
         self.key = key
         self.secret = secret
         self.passphrase = passphrase
         self.flag = flag
+        self.session = requests.Session()
 
     @request_retry_wrapper()
     def send_request(self, path, method, **params):
@@ -90,9 +92,9 @@ class Client(object):
         )
         # request
         if method == 'GET':
-            response = requests.get(url, headers=header)
+            response = self.session.get(url, headers=header)
         elif method == 'POST':
-            response = requests.post(url, data=body, headers=header)
+            response = self.session.post(url, data=body, headers=header)
         else:
             msg = 'Error request method {method}'.format(method=str(method))
             raise RequestMethodError(msg)
